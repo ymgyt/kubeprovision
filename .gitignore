@@ -1,0 +1,4 @@
+/target
+*.iml
+config/*.yaml
+!config/example.yaml

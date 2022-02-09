@@ -1,0 +1,18 @@
+provider: aws
+aws:
+  ec2:
+    node:
+      distribution: "ubuntu"
+      ssh:
+        user: "ubuntu"
+      tag:
+        key: "example:project"
+        value: "handson"
+      master:
+        tag:
+          key: "handson:kubernetes:node:role"
+          value: "master"
+      worker:
+        tag:
+          key: "handson:kubernetes:node:role"
+          value: "worker"
