@@ -2,7 +2,7 @@ use anyhow::anyhow;
 
 use crate::{
     config::SshConfig,
-    node::{ClusterNodes, Node, NodeCategory, EC2},
+    node::{ClusterNodes, Node, NodeRole, EC2},
     operator::AwsOperator,
     provision::Provisioner,
     ssh::Session,
@@ -36,14 +36,14 @@ pub async fn provision(ssh_config: &SshConfig, operator: &AwsOperator) -> anyhow
     for master in cluster_nodes.master {
         provision_handles.push(tokio::spawn(provision_node(
             ssh_config.user.clone(),
-            NodeCategory::Master,
+            NodeRole::Master,
             master,
         )));
     }
     for worker in cluster_nodes.worker {
         provision_handles.push(tokio::spawn(provision_node(
             ssh_config.user.clone(),
-            NodeCategory::Worker,
+            NodeRole::Worker,
             worker,
         )));
     }
@@ -55,11 +55,7 @@ pub async fn provision(ssh_config: &SshConfig, operator: &AwsOperator) -> anyhow
     Ok(())
 }
 
-async fn provision_node(
-    ssh_user: String,
-    category: NodeCategory,
-    instance: EC2,
-) -> anyhow::Result<()> {
+async fn provision_node(ssh_user: String, category: NodeRole, instance: EC2) -> anyhow::Result<()> {
     let provisioner = Provisioner::new();
     let public_ip = instance.public_ip().ok_or_else(|| {
         anyhow!(
@@ -69,6 +65,6 @@ async fn provision_node(
     })?;
     let session = Session::connect(&ssh_user, &public_ip.to_string()).await?;
     provisioner
-        .provision(category, instance.id(), session)
+        .provision(category, instance.id().clone(), session)
         .await
 }

@@ -31,7 +31,7 @@ impl Cli {
     pub async fn run(self, config: Config) -> anyhow::Result<()> {
         match self.command {
             Command::Provision { .. } => cli::provision::run(config).await,
-            Command::Status { .. } => cli::status::run(config).await,
+            Command::Status { .. } => cli::status::run(config, std::io::stdout()).await,
             Command::Start { .. } => cli::node_state::start(config).await,
             Command::Stop { .. } => cli::node_state::stop(config).await,
         }

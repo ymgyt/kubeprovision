@@ -1,6 +1,9 @@
 use tracing::{error, info};
 
-use crate::{node::NodeCategory, ssh::Session};
+use crate::{
+    node::{NodeId, NodeRole},
+    ssh::Session,
+};
 
 pub struct Provisioner {}
 
@@ -8,10 +11,11 @@ impl Provisioner {
     pub fn new() -> Self {
         Self {}
     }
+
     pub async fn provision(
         &self,
-        category: NodeCategory,
-        node_id: String,
+        category: NodeRole,
+        node_id: NodeId,
         session: Session,
     ) -> anyhow::Result<()> {
         // TODO enter span

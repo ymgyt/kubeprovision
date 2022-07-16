@@ -7,7 +7,7 @@ use aws_sdk_ec2::{
 };
 
 use crate::{
-    node::{ClusterNodes, NodeCategory, EC2},
+    node::{ClusterNodes, NodeRole, EC2},
     Config,
 };
 
@@ -99,8 +99,8 @@ impl AwsOperator {
                     if let Some(category) = self.categorize(&instance) {
                         let node = EC2::try_from(instance)?;
                         match category {
-                            NodeCategory::Master => master_nodes.push(node),
-                            NodeCategory::Worker => worker_nodes.push(node),
+                            NodeRole::Master => master_nodes.push(node),
+                            NodeRole::Worker => worker_nodes.push(node),
                         }
                     }
                 }
@@ -118,13 +118,13 @@ impl AwsOperator {
         })
     }
 
-    fn categorize(&self, instance: &Instance) -> Option<NodeCategory> {
+    fn categorize(&self, instance: &Instance) -> Option<NodeRole> {
         if let Some(tags) = instance.tags() {
             for tag in tags {
                 if self.tag_spec.master_node.eq(tag) {
-                    return Some(NodeCategory::Master);
+                    return Some(NodeRole::Master);
                 } else if self.tag_spec.worker_node.eq(tag) {
-                    return Some(NodeCategory::Worker);
+                    return Some(NodeRole::Worker);
                 }
             }
         }
@@ -152,7 +152,10 @@ impl AwsOperator {
         nodes: &ClusterNodes<EC2>,
         state: ChangeInstanceState,
     ) -> anyhow::Result<()> {
-        let ids = nodes.node_ids().collect::<Vec<_>>();
+        let ids = nodes
+            .node_ids()
+            .map(|id| id.as_ref().to_owned())
+            .collect::<Vec<String>>();
         if !ids.is_empty() {
             match state {
                 ChangeInstanceState::Start => {
