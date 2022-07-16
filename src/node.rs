@@ -1,8 +1,8 @@
 mod ec2;
 
-pub use ec2::EC2;
-
 use std::net::IpAddr;
+
+pub use ec2::EC2;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum NodeCategory {

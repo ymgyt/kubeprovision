@@ -682,6 +682,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
+ "tracing-init",
  "tracing-subscriber",
 ]
 
@@ -1357,6 +1358,15 @@ checksum = "03cfcb51380632a72d3111cb8d3447a8d908e577d31beeac006f836383d29a23"
 dependencies = [
  "lazy_static",
  "valuable",
+]
+
+[[package]]
+name = "tracing-init"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2dfc9e931b03d995505edad6fdc6e204998cb36eb5ff921379af17a94c73da7f"
+dependencies = [
+ "tracing-subscriber",
 ]
 
 [[package]]

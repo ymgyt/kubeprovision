@@ -1,6 +1,4 @@
-use crate::config::Provider;
-use crate::operator::AwsOperator;
-use crate::{usecase, Config};
+use crate::{config::Provider, operator::AwsOperator, usecase, Config};
 
 enum ChangeState {
     Start,

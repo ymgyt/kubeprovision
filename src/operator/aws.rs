@@ -1,11 +1,15 @@
-use crate::node::{ClusterNodes, NodeCategory, EC2};
-use crate::Config;
+use std::cmp::PartialEq;
+
 use anyhow::anyhow;
 use aws_sdk_ec2::{
     model::{Filter, Instance},
     Client as EC2Client,
 };
-use std::cmp::PartialEq;
+
+use crate::{
+    node::{ClusterNodes, NodeCategory, EC2},
+    Config,
+};
 
 #[derive(Debug, Clone)]
 pub struct AwsTag {

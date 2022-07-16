@@ -1,9 +1,12 @@
-use crate::config::SshConfig;
-use crate::node::{ClusterNodes, Node, NodeCategory, EC2};
-use crate::operator::AwsOperator;
-use crate::provision::Provisioner;
-use crate::ssh::Session;
 use anyhow::anyhow;
+
+use crate::{
+    config::SshConfig,
+    node::{ClusterNodes, Node, NodeCategory, EC2},
+    operator::AwsOperator,
+    provision::Provisioner,
+    ssh::Session,
+};
 
 pub async fn collect(operator: &AwsOperator) -> anyhow::Result<ClusterNodes<EC2>> {
     operator.list_nodes().await

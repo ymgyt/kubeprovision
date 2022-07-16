@@ -2,11 +2,11 @@ mod node_state;
 mod provision;
 mod status;
 
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
-use crate::cli;
-use crate::Config;
-use std::path::PathBuf;
+use crate::{cli, Config};
 
 #[derive(Parser, Debug)]
 #[clap(

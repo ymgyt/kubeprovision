@@ -1,5 +1,6 @@
-use crate::operator::AwsTag;
 use serde::Deserialize;
+
+use crate::operator::AwsTag;
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename = "aws")]

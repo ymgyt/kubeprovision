@@ -1,6 +1,6 @@
-use crate::node::NodeCategory;
-use crate::ssh::Session;
 use tracing::{error, info};
+
+use crate::{node::NodeCategory, ssh::Session};
 
 pub struct Provisioner {}
 

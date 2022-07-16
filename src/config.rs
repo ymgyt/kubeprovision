@@ -2,11 +2,12 @@ mod provider;
 pub use provider::Provider;
 
 mod aws;
+use std::path::Path;
+
 pub use aws::*;
+use serde::Deserialize;
 
 use crate::operator::AwsTagSpec;
-use serde::Deserialize;
-use std::path::Path;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
