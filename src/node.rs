@@ -62,6 +62,13 @@ impl<T: Node> ClusterNodes<T> {
 
         masters.chain(workers)
     }
+
+    pub fn into_nodes(self) -> impl Iterator<Item = (NodeRole, T)> {
+        let masters = self.master.into_iter().map(|node| (NodeRole::Master, node));
+        let workers = self.worker.into_iter().map(|node| (NodeRole::Worker, node));
+
+        masters.chain(workers)
+    }
 }
 
 impl<T> ClusterNodes<T> {

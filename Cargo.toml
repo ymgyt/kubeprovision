@@ -5,16 +5,19 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.53"
-aws-sdk-ec2 = "0.6.0"
 aws-config = "0.6.0"
+aws-sdk-ec2 = "0.6.0"
+async-trait = "0.1.56"
+itertools = "0.8.1"
 clap = { version = "3.0.14", features = ["derive", "env"] }
-serde = { version = "1.0.136", features = ["derive"] }
-thiserror = "1.0.30"
 openssh = "0.8.1"
+prettytable-rs = "0.8"
+serde = { version = "1.0.136", features = ["derive"] }
+serde_yaml = "0.8.1"
+thiserror = "1.0.30"
 tokio = { version = "1.14.0", features = ["rt", "rt-multi-thread", "macros", "net"], default_features = false }
 tracing = "0.1.30"
-tracing-subscriber = { version = "0.3.8", features = ["time", "local-time", "env-filter"] }
-serde_yaml = "0.8.1"
+tracing-futures = "0.2.5"
 tracing-init = "0.1.0"
-prettytable-rs = "0.8"
+tracing-subscriber = { version = "0.3.8", features = ["time", "local-time", "env-filter"] }
 

@@ -1,11 +1,12 @@
 use anyhow::anyhow;
+use tracing_futures::Instrument;
 
 use crate::{
     config::SshConfig,
     node::{ClusterNodes, Node, NodeRole, EC2},
     operator::AwsOperator,
     provision::Provisioner,
-    ssh::Session,
+    ssh,
 };
 
 pub async fn collect(operator: &AwsOperator) -> anyhow::Result<ClusterNodes<EC2>> {
@@ -33,19 +34,9 @@ pub async fn provision(ssh_config: &SshConfig, operator: &AwsOperator) -> anyhow
     let cluster_nodes = collect(operator).await?;
     let mut provision_handles = Vec::with_capacity(cluster_nodes.len());
 
-    for master in cluster_nodes.master {
-        provision_handles.push(tokio::spawn(provision_node(
-            ssh_config.user.clone(),
-            NodeRole::Master,
-            master,
-        )));
-    }
-    for worker in cluster_nodes.worker {
-        provision_handles.push(tokio::spawn(provision_node(
-            ssh_config.user.clone(),
-            NodeRole::Worker,
-            worker,
-        )));
+    for (role, node) in cluster_nodes.into_nodes() {
+        let handle = tokio::spawn(provision_node(ssh_config.user.clone(), role, node));
+        provision_handles.push(handle);
     }
 
     for provision in provision_handles.into_iter() {
@@ -55,16 +46,22 @@ pub async fn provision(ssh_config: &SshConfig, operator: &AwsOperator) -> anyhow
     Ok(())
 }
 
-async fn provision_node(ssh_user: String, category: NodeRole, instance: EC2) -> anyhow::Result<()> {
-    let provisioner = Provisioner::new();
-    let public_ip = instance.public_ip().ok_or_else(|| {
+async fn provision_node(ssh_user: String, role: NodeRole, node: impl Node) -> anyhow::Result<()> {
+    let public_ip = node.public_ip().ok_or_else(|| {
         anyhow!(
-            "ec2 instance {} does not have public ip. maybe not started",
-            instance.id()
+            "node {} does not have public ip. maybe not started",
+            node.id()
         )
     })?;
-    let session = Session::connect(&ssh_user, &public_ip.to_string()).await?;
+    let session = ssh::connect(&ssh_user, &public_ip.to_string()).await?;
+    let provisioner = Provisioner::new(session);
     provisioner
-        .provision(category, instance.id().clone(), session)
+        .provision()
+        .instrument(tracing::info_span!(
+            "provision",
+            role=%role,
+            node_id=%node.id(),
+        ))
         .await
+        .map_err(anyhow::Error::from)
 }
