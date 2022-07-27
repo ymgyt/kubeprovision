@@ -1,6 +1,6 @@
 mod ec2;
 
-use std::{fmt, fmt::Formatter, net::IpAddr};
+use std::{fmt, fmt::Formatter, net::IpAddr, str::FromStr};
 
 pub use ec2::EC2;
 
@@ -15,6 +15,17 @@ impl fmt::Display for NodeRole {
         match self {
             NodeRole::Master => write!(f, "master"),
             NodeRole::Worker => write!(f, "worker"),
+        }
+    }
+}
+
+impl FromStr for NodeRole {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "master" => Ok(NodeRole::Master),
+            "worker" => Ok(NodeRole::Worker),
+            etc => Err(format!("unexpected node role {etc}")),
         }
     }
 }

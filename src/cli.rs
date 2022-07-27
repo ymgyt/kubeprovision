@@ -1,3 +1,4 @@
+mod exec;
 mod node_state;
 mod provision;
 mod status;
@@ -6,7 +7,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-use crate::{cli, Config};
+use crate::{cli, node::NodeRole, Config};
 
 #[derive(Parser, Debug)]
 #[clap(
@@ -34,6 +35,7 @@ impl Cli {
             Command::Status { .. } => cli::status::run(config, std::io::stdout()).await,
             Command::Start { .. } => cli::node_state::start(config).await,
             Command::Stop { .. } => cli::node_state::stop(config).await,
+            Command::Exec { command, role } => cli::exec::run(config, command, role).await,
         }
     }
 }
@@ -48,4 +50,11 @@ enum Command {
     Start,
     #[clap(about = "Stop kubernetes nodes")]
     Stop,
+    #[clap(about = "Execute given command in nodes")]
+    Exec {
+        #[clap(long, short = 'c', help = "execute command in bash -c ")]
+        command: String,
+        #[clap(long, help = "target node role")]
+        role: Option<NodeRole>,
+    },
 }

@@ -50,12 +50,12 @@ impl RemoteCommandExecutor for openssh::Session {
                 (output, log)
             }
             Command::Sudo(args) => {
-                let log = format!("sudo {:20}", args.join(" "));
+                let log = format!("sudo {}", args.join(" "));
                 let output = self.command("sudo").args(args).output().await;
                 (output, log)
             }
             Command::Executable(command, args) => {
-                let log = format!("{} {:20}", &command, args.join(" "));
+                let log = format!("{} {}", &command, args.join(" "));
                 let output = self.command(command).args(args).output().await;
                 (output, log)
             }
@@ -65,6 +65,12 @@ impl RemoteCommandExecutor for openssh::Session {
 
         if output.status.success() {
             info!("success {}", log);
+            if !output.stdout.is_empty() {
+                info!(
+                    "stdout: {}",
+                    String::from_utf8_lossy(output.stdout.as_ref())
+                );
+            }
             Ok(())
         } else {
             Err(ProvisionError::RemoteCommand(

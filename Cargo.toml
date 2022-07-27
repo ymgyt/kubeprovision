@@ -5,11 +5,13 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.53"
+async-trait = "0.1.56"
 aws-config = "0.6.0"
 aws-sdk-ec2 = "0.6.0"
-async-trait = "0.1.56"
-itertools = "0.8.1"
 clap = { version = "3.0.14", features = ["derive", "env"] }
+error-stack = "0.1.1"
+futures = "0.3.21"
+itertools = "0.8.1"
 openssh = "0.8.1"
 prettytable-rs = "0.8"
 serde = { version = "1.0.136", features = ["derive"] }
